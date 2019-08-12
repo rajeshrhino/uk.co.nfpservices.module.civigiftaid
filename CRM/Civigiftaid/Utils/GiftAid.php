@@ -46,7 +46,7 @@ class CRM_Civigiftaid_Utils_GiftAid {
      * How long a positive Gift Aid declaration is valid for under HMRC rules (years).
      */
     const DECLARATION_LIFETIME = 3;
-    
+
     // Giftaid Declaration Options.
     const DECLARATION_IS_YES = 1;
     const DECLARATION_IS_NO = 0;
@@ -384,14 +384,14 @@ class CRM_Civigiftaid_Utils_GiftAid {
         // Update
         $sql = "
         UPDATE civicrm_value_gift_aid_submission
-        SET eligible_for_gift_aid = %1
-        WHERE entity_id = %2";
+        SET eligible_for_gift_aid = %2
+        WHERE entity_id = %1";
       }
 
       $queryParams = array(
         1 => array($params['entity_id'], 'Integer'),
         2 => array($params['eligible_for_gift_aid'], 'Integer'),
-      );  
+      );
       $dao = CRM_Core_DAO::executeQuery( $sql, $queryParams );
     }
 
@@ -470,7 +470,7 @@ class CRM_Civigiftaid_Utils_GiftAid {
       }
       return TRUE;
     }
-    
+
     /**
      * Get all gift aid declarations made by a contact.
      *
@@ -482,7 +482,7 @@ class CRM_Civigiftaid_Utils_GiftAid {
       $sql = "SELECT id, entity_id, eligible_for_gift_aid, start_date, end_date, reason_ended, source, notes
               FROM civicrm_value_gift_aid_declaration
               WHERE  entity_id = %1";
-      $sqlParams = array( 
+      $sqlParams = array(
                      1 => array($contactID, 'Integer')
                    );
 
