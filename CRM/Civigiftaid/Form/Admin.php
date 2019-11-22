@@ -53,9 +53,10 @@ class CRM_Civigiftaid_Form_Admin extends CRM_Core_Form {
   public function postProcess() {
     $values = $this->exportValues();
 
-    $settings = new stdClass();
-    $settings->globally_enabled = empty($values['globally_enabled']) ? 0 : 1;
-    $settings->financial_types_enabled = $values['financial_types_enabled'];
+    $settings = [
+      'globally_enabled' => empty($values['globally_enabled']) ? 0 : 1,
+      'financial_types_enabled' => $values['financial_types_enabled']
+    ];
 
     CRM_Core_BAO_Setting::setItem(
       $settings,
@@ -146,7 +147,7 @@ class CRM_Civigiftaid_Form_Admin extends CRM_Core_Form {
    * @throws \CiviCRM_API3_Exception
    */
   private function getFinancialTypes() {
-    $result = civicrm_api3('FinancialType', 'get', 
+    $result = civicrm_api3('FinancialType', 'get',
       array(
         'sequential' => 1,
         'is_active' => 1,
