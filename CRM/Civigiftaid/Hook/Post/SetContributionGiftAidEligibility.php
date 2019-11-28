@@ -42,9 +42,7 @@ class CRM_Civigiftaid_Hook_Post_SetContributionGiftAidEligibility {
    */
   private function setGiftAidEligibilityStatus($contributionId) {
     $currentPath = CRM_Utils_System::currentPath();
-    $addMembershipPath = 'civicrm/member/add';
-    $registerEventParticipantPath = 'civicrm/participant/add';
-    if (!in_array($currentPath, [$registerEventParticipantPath, $addMembershipPath])) {
+    if (!in_array($currentPath, $this->getRequiredPaths())) {
       return;
     }
 
@@ -149,6 +147,21 @@ class CRM_Civigiftaid_Hook_Post_SetContributionGiftAidEligibility {
     catch (Exception $e) {}
   }
 
+
+  /**
+   * Returns paths/Urls where that needs this functionality implemented.
+   *
+   * @return array
+   *   Required paths.
+   */
+  private function getRequiredPaths() {
+    return [
+      'civicrm/member/add', // Add membership page
+      'civicrm/contact/view/membership', // Add membership from contact view page
+      'civicrm/participant/add', // Register event participant page
+      'civicrm/contact/view/participant' //Add participant from contact view page
+    ];
+  }
 
   /**
    * Determines if the hook should run or not.
