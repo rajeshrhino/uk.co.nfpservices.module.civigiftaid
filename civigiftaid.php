@@ -101,6 +101,19 @@ function civigiftaid_civicrm_searchTasks($objectType, &$tasks) {
 }
 
 /**
+ * Implementation of hook_civicrm_post.
+ */
+function civigiftaid_civicrm_post($op, $objectName, $objectId, &$objectRef) {
+  $hooks = [
+    new CRM_Civigiftaid_Hook_Post_SetContributionGiftAidEligibility(),
+  ];
+
+  foreach ($hooks as $hook) {
+    $hook->run($op, $objectName, $objectId, $objectRef);
+  }
+}
+
+/**
  * Implementation of hook_civicrm_postProcess
  * To copy the contact's home address to the declaration, when the declaration is created
  * Only for offline contribution
