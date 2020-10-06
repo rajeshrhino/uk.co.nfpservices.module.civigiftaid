@@ -128,7 +128,7 @@ class CRM_Civigiftaid_Form_Task_AddToBatch extends CRM_Contribute_Form_Task {
     $batchParams['title'] = $params['title'];
     $batchParams['name'] = CRM_Utils_String::titleToVar($params['title'], 63);
     $batchParams['description'] = $params['description'];
-    $batchParams['batch_type'] = "Gift Aid";
+    $batchParams['type_id'] = CRM_Core_PseudoConstant::getKey('CRM_Batch_DAO_Batch', 'type_id', 'giftaid_batch');
 
     $session = CRM_Core_Session::singleton();
     $batchParams['created_id'] = $session->get('userID');

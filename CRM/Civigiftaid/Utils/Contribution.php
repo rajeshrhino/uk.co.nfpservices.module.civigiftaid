@@ -94,19 +94,18 @@ class CRM_Civigiftaid_Utils_Contribution {
       'charity'
     );
 
+    $contributionsInBatch = self::getContributionsInBatch($contributionIDs);
     foreach ($contributionIDs as $contributionID) {
-      //$batchContribution = new CRM_Core_DAO_EntityBatch( );
-      $batchContribution = new CRM_Batch_DAO_EntityBatch();
-      $batchContribution->entity_table = 'civicrm_contribution';
-      $batchContribution->entity_id = $contributionID;
-
       // check if the selected contribution id already in a batch
       // if not, add to batchContribution else keep the count of contributions that are not added
-
-      if ($batchContribution->find(TRUE)) {
+      if (in_array($contributionID, $contributionsInBatch, true)) {
         $contributionsNotAdded[] = $contributionID;
         continue;
       }
+
+      $batchContribution = new CRM_Batch_DAO_EntityBatch();
+      $batchContribution->entity_table = 'civicrm_contribution';
+      $batchContribution->entity_id = $contributionID;
 
       // get additional info
       // get contribution details from Contribution using contribution id
@@ -394,14 +393,11 @@ class CRM_Civigiftaid_Utils_Contribution {
     require_once "CRM/Batch/DAO/EntityBatch.php";
     require_once "CRM/Contribute/BAO/Contribution.php";
 
+    $contributionsInBatch = self::getContributionsInBatch($contributionIDs);
     foreach ($contributionIDs as $contributionID) {
-      $batchContribution = new CRM_Batch_DAO_EntityBatch();
-      $batchContribution->entity_table = 'civicrm_contribution';
-      $batchContribution->entity_id = $contributionID;
-
       // check if the selected contribution id already in a batch
       // if not, increment $numContributionsAdded else keep the count of contributions that are already added
-      if (!$batchContribution->find(TRUE)) {
+      if (!in_array($contributionID, $contributionsInBatch, TRUE)) {
         // get contact_id, & contribution receive date from Contribution using contribution id
         $params = array('id' => $contributionID);
         CRM_Contribute_BAO_Contribution::retrieve($params, $defaults, $ids);
@@ -616,5 +612,29 @@ class CRM_Civigiftaid_Utils_Contribution {
     return CRM_Civigiftaid_Form_Admin::isGloballyEnabled()
       ? $contributionAmt
       : static::getContribAmtForEnabledFinanceTypes($contributionID);
+  }
+
+  /**
+   * Get all contribution Ids that are already in giftaid batch.
+   *
+   * @param array $contributionIDs
+   *  Array of contribution Ids.
+   * @return array
+   *  Array of contributions Ids that are alredy in batch.
+   */
+  private static function getContributionsInBatch(array $contributionIDs) {
+    $contributions = civicrm_api3('EntityBatch', 'get', [
+        'return' => ['entity_id'],
+        'entity_table' => 'civicrm_contribution',
+        'batch_id.type_id' => "giftaid_batch",
+        'entity_id' => [ 'IN' => [$contributionIDs]],
+    ]);
+
+    $contributionsInBatch = [];
+    if (!empty($contributions['values'])) {
+      $contributionsInBatch = array_column($contributions['values'], 'entity_id');
+    }
+
+    return $contributionsInBatch;
   }
 }

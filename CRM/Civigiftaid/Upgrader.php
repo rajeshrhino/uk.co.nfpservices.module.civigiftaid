@@ -66,6 +66,7 @@ class CRM_Civigiftaid_Upgrader extends CRM_Civigiftaid_Upgrader_Base {
 
     $this->upgrade_3000();
     $this->upgrade_3101();
+    $this->upgrade_3103();
   }
 
   /**
@@ -338,6 +339,22 @@ class CRM_Civigiftaid_Upgrader extends CRM_Civigiftaid_Upgrader_Base {
 
     CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET option_group_id = {$og1Id} WHERE name = 'Eligible_for_Gift_Aid' AND custom_group_id = {$declarationCustomGroupID}");
     CRM_Core_DAO::executeQuery("UPDATE civicrm_custom_field SET option_group_id = {$og2Id} WHERE name = 'Eligible_for_Gift_Aid' AND custom_group_id = {$submissionCustomGroupId}");
+
+    return TRUE;
+  }
+
+  /**
+   * Create Giftaid batch type.
+   */
+  public function upgrade_3103() {
+    $this->log('Applying update 3103');
+
+    $result = civicrm_api3('OptionValue', 'create', [
+        'option_group_id' => "batch_type",
+        'label' => 'Giftaid Batch',
+        'name' => 'giftaid_batch',
+        'description' => 'Giftaid Batch Type',
+    ]);
 
     return TRUE;
   }
